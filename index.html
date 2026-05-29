@@ -51,7 +51,20 @@
       z-index: 100;
       opacity: 0.4;
     }
-
+#globalPetals {
+  position: fixed; inset: 0;
+  pointer-events: none; z-index: 150; overflow: hidden;
+}
+.petal {
+  position: absolute; top: -30px; opacity: 0;
+  animation: petalFall linear infinite;
+}
+@keyframes petalFall {
+  0%   { transform: translateY(0) rotate(0deg) translateX(0); opacity: 0; }
+  8%   { opacity: 0.8; }
+  88%  { opacity: 0.6; }
+  100% { transform: translateY(108vh) rotate(420deg) translateX(35px); opacity: 0; }
+}
     
     * { cursor: none; }
 
@@ -1550,6 +1563,31 @@ footer {
   
 
   <script>
+
+    const gp = document.getElementById('globalPetals');
+const petalColors = ['#f2cdd4','#e8b4c0','#d4bfdc','#b5c4b1','#e8c4b8','#f0d4c0','#c8d4bc','#e8d4e0'];
+function createPetal() {
+  const el = document.createElement('div');
+  el.className = 'petal';
+  const size = 10 + Math.random() * 14;
+  const dur  = 6 + Math.random() * 7;
+  const delay = Math.random() * 3;
+  el.style.cssText = `
+    left: ${Math.random() * 105 - 2}vw;
+    width: ${size}px;
+    height: ${size * 0.55}px;
+    background: ${petalColors[Math.floor(Math.random() * petalColors.length)]};
+    border-radius: ${Math.random() > 0.5 ? '50% 10% 50% 10%' : '60% 40% 60% 40%'};
+    animation-duration: ${dur}s;
+    animation-delay: ${delay}s;
+    filter: blur(${Math.random() * 0.4}px);
+    opacity: 0;
+  `;
+  gp.appendChild(el);
+  setTimeout(() => el.remove(), (dur + delay + 1) * 1000);
+}
+for (let i = 0; i < 25; i++) createPetal();
+setInterval(createPetal, 500);
     
     const cur = document.getElementById('cur');
     const curRing = document.getElementById('curRing');
@@ -1576,31 +1614,34 @@ const palette = [
   '#ede5d8'
 ];
 
-const kisses = ['💋', '😘', '🥰', '💕', '💗'];
+const cpal = ['#f5f0e8','#b5c4b1','#e8c4b8','#c9b49a','#7a9b74','#2c2416','#ede5d8'];
 
 function celebrate() {
- 
   for (let i = 0; i < 60; i++) {
     setTimeout(() => {
       const el = document.createElement('div');
       el.className = 'confetti-piece';
-
-      const size = 5 + Math.random() * 9;
-
-      el.style.cssText = `
-        left: ${15 + Math.random() * 70}vw;
-        top: -10px;
-        width: ${size}px;
-        height: ${size}px;
-        background: ${palette[Math.floor(Math.random() * palette.length)]};
-        border-radius: ${Math.random() > 0.4 ? '50%' : '1px'};
-        animation-duration: ${2 + Math.random() * 2.5}s;
-      `;
-
-      document.body.appendChild(el);
-      setTimeout(() => el.remove(), 5000);
+      const s = 5 + Math.random() * 9;
+      el.style.cssText = `left:${15+Math.random()*70}vw;top:-10px;width:${s}px;height:${s}px;background:${cpal[Math.floor(Math.random()*cpal.length)]};border-radius:${Math.random()>0.4?'50%':'1px'};animation-duration:${2+Math.random()*2.5}s;`;
+      document.body.appendChild(el); setTimeout(() => el.remove(), 5000);
     }, i * 28);
   }
+  for (let i = 0; i < 14; i++) {
+    setTimeout(() => {
+      const el = document.createElement('div');
+      el.className = 'confetti-piece';
+      el.textContent = kisses[Math.floor(Math.random()*kisses.length)];
+      el.style.cssText = `left:${10+Math.random()*80}vw;top:-10px;font-size:${1.4+Math.random()*1.4}rem;background:none;animation-duration:${2.5+Math.random()*2}s;line-height:1;`;
+      document.body.appendChild(el); setTimeout(() => el.remove(), 5000);
+    }, i * 55);
+  }
+  
+  burstFireworks();
+  setTimeout(burstFireworks, 600);
+  const toast = document.getElementById('toast');
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2800);
+}
 
   
   for (let i = 0; i < 12; i++) {
@@ -1609,7 +1650,7 @@ function celebrate() {
       el.className = 'confetti-piece';
 
       
-      const emoji = kisses[Math.floor(Math.random() * kisses.length)];
+      
 
       el.style.cssText = `
         left: ${10 + Math.random() * 80}vw;
@@ -1621,8 +1662,7 @@ function celebrate() {
       `;
 
       
-      el.textContent = emoji;
-
+      
       document.body.appendChild(el);
       setTimeout(() => el.remove(), 5000);
     }, i * 55); 
